@@ -1,0 +1,940 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d6e7d">
+<link rel="manifest" href="./manifest.webmanifest">
+<title>Ficha de campo · Piscina Sauna Spa Apolo</title>
+<style>
+:root{
+  --paper:#eef3f3; --surface:#fff; --surface-2:#f6fafa;
+  --ink:#152a30; --ink-2:#4e666e; --ink-3:#7b939a;
+  --line:#d2dfe0; --line-2:#b4c7c9;
+  --accent:#0d6e7d; --accent-ink:#0b5a66; --accent-soft:#dcedee;
+  --ok:#2f6b46; --ok-soft:#dcefe3;
+  --warn:#8f5d0d; --warn-soft:#f7ead3;
+  --bad:#9c3226; --bad-soft:#f7ddd8;
+  --sans:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Cascadia Mono",Consolas,"SF Mono",Menlo,monospace;
+  --sh:0 1px 2px rgba(21,42,48,.07),0 8px 24px -18px rgba(21,42,48,.4);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --paper:#0d181c; --surface:#15252a; --surface-2:#1a2d33;
+  --ink:#e7efef; --ink-2:#a3b8bc; --ink-3:#7d9298;
+  --line:#273d43; --line-2:#38535a;
+  --accent:#4fc0d1; --accent-ink:#8ad8e4; --accent-soft:#103840;
+  --ok:#6fbf8e; --ok-soft:#153324;
+  --warn:#e0a955; --warn-soft:#3a2c14;
+  --bad:#e58573; --bad-soft:#3d211b;
+  --sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px -18px rgba(0,0,0,.8);
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;
+  -webkit-text-size-adjust:100%}
+.shell{max-width:840px;margin:0 auto;padding-inline:14px;padding-block:0 120px}
+
+/* barra superior */
+.top{position:sticky;top:0;z-index:20;background:var(--surface);border-bottom:1px solid var(--line);
+  margin-inline:-14px;padding:10px 14px 0;box-shadow:var(--sh)}
+.top h1{margin:0;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.top .sub{font-family:var(--mono);font-size:10.5px;color:var(--ink-3);letter-spacing:.06em;text-transform:uppercase}
+.bar{height:5px;background:var(--line);border-radius:3px;margin:9px 0 0;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.steps{display:flex;gap:5px;overflow-x:auto;padding:9px 0 8px;scrollbar-width:thin}
+.steps button{flex:0 0 auto;font:600 11px/1 var(--sans);padding:7px 11px;border-radius:999px;
+  border:1px solid var(--line-2);background:var(--surface-2);color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.steps button[aria-current=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.steps button.done{border-color:var(--ok);color:var(--ok)}
+
+/* secciones */
+.sec{background:var(--surface);border-radius:4px;box-shadow:var(--sh);margin-top:16px;overflow:hidden}
+.sec>header{padding:16px 18px;border-bottom:1px solid var(--line);background:var(--accent-soft)}
+.sec>header .n{font-family:var(--mono);font-size:11px;color:var(--accent-ink);font-weight:600;letter-spacing:.1em}
+.sec>header h2{margin:3px 0 0;font-size:19px;letter-spacing:-.01em}
+.sec>header p{margin:7px 0 0;font-size:13.5px;color:var(--ink-2);max-width:60ch}
+.fields{padding:6px 18px 18px}
+.f{padding:14px 0;border-bottom:1px solid var(--line)}
+.f:last-child{border-bottom:0}
+.f>label{display:block;font-weight:600;font-size:15px;margin-bottom:3px}
+.f .help{font-size:13px;color:var(--ink-2);margin-bottom:9px;max-width:62ch}
+.f .row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{
+  font:400 16px/1.4 var(--sans);color:var(--ink);background:var(--surface-2);
+  border:1px solid var(--line-2);border-radius:3px;padding:11px 12px;min-height:46px;width:100%;max-width:340px}
+input[type=number]{font-family:var(--mono);max-width:170px}
+textarea{max-width:100%;min-height:76px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{
+  outline:3px solid var(--accent);outline-offset:1px}
+.unit{font-family:var(--mono);font-size:13px;color:var(--accent-ink);font-weight:600}
+.seg{display:flex;gap:7px;flex-wrap:wrap}
+.seg button{font:600 14px/1 var(--sans);padding:12px 18px;border-radius:3px;border:1px solid var(--line-2);
+  background:var(--surface-2);color:var(--ink-2);cursor:pointer;min-height:46px}
+.seg button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.hint{margin-top:8px;font-family:var(--mono);font-size:12.5px;color:var(--accent-ink);
+  background:var(--accent-soft);padding:7px 10px;border-radius:3px;display:inline-block}
+
+/* calculadora auxiliar */
+.aux{margin-top:10px;padding:12px 14px;background:var(--surface-2);border:1px dashed var(--line-2);border-radius:3px}
+.aux b{display:block;font-size:13px;margin-bottom:8px}
+.aux .row{gap:8px}
+.aux input{max-width:110px;min-height:42px}
+
+/* navegacion */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:20;background:var(--surface);
+  border-top:1px solid var(--line);padding:11px 14px calc(11px + env(safe-area-inset-bottom));
+  display:flex;gap:9px;align-items:center;box-shadow:0 -6px 20px -14px rgba(0,0,0,.5)}
+.nav .sp{flex:1;font-family:var(--mono);font-size:11px;color:var(--ink-3)}
+.nav button{font:600 15px/1 var(--sans);padding:14px 20px;border-radius:3px;border:1px solid var(--line-2);
+  background:var(--surface-2);color:var(--ink);cursor:pointer;min-height:50px}
+.nav button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.nav button:disabled{opacity:.4;cursor:not-allowed}
+
+/* resultados */
+.res{display:flex;flex-direction:column;gap:9px;padding:14px 18px 18px}
+.card{border:1px solid var(--line);border-left-width:5px;border-radius:3px;padding:13px 15px;background:var(--surface-2)}
+.card.ok{border-left-color:var(--ok)} .card.warn{border-left-color:var(--warn)}
+.card.bad{border-left-color:var(--bad)} .card.na{border-left-color:var(--line-2)}
+.card .t{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap}
+.card .t b{font-size:15px}
+.card .v{font-family:var(--mono);font-size:19px;font-weight:600}
+.card.ok .v{color:var(--ok)} .card.warn .v{color:var(--warn)}
+.card.bad .v{color:var(--bad)} .card.na .v{color:var(--ink-3);font-size:14px}
+.card .x{font-size:13px;color:var(--ink-2);margin-top:6px}
+.card .art{font-family:var(--mono);font-size:11px;color:var(--accent-ink);background:var(--accent-soft);
+  padding:1px 6px;border-radius:2px;margin-left:6px}
+.tag{font:600 10.5px/1 var(--mono);padding:4px 8px;border-radius:2px;letter-spacing:.05em}
+.tag.ok{background:var(--ok-soft);color:var(--ok)} .tag.warn{background:var(--warn-soft);color:var(--warn)}
+.tag.bad{background:var(--bad-soft);color:var(--bad)} .tag.na{background:var(--line);color:var(--ink-3)}
+.grp{font:600 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);
+  margin:10px 0 0;padding-top:10px;border-top:1px solid var(--line)}
+.grp:first-child{border-top:0;padding-top:0;margin-top:0}
+
+/* exportar */
+.exp{display:flex;flex-wrap:wrap;gap:9px;padding:0 18px 18px}
+.exp button{font:600 14px/1 var(--sans);padding:13px 17px;border-radius:3px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;cursor:pointer;min-height:48px}
+.exp button.alt{background:var(--surface-2);color:var(--accent-ink)}
+.exp button.danger{background:var(--surface-2);color:var(--bad);border-color:var(--bad)}
+.note{padding:0 18px 18px;font-size:13px;color:var(--ink-2)}
+.toast{position:fixed;left:50%;bottom:86px;transform:translateX(-50%);z-index:40;
+  background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:4px;font-size:14px;
+  box-shadow:var(--sh);opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.on{opacity:1}
+@media print{
+  .top,.nav,.exp,.steps{display:none!important}
+  .sec{display:block!important;box-shadow:none;border:1px solid #999;break-inside:avoid;margin-top:10px}
+  body{background:#fff;font-size:10pt}
+  input,select,textarea{border:1px solid #999;background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="shell" style="padding-block:0">
+    <div class="sub">Levantamiento hidráulico-sanitario</div>
+    <h1>Piscina recreacional · Sauna Spa Apolo</h1>
+    <div class="bar"><i id="bar"></i></div>
+    <div class="steps" id="steps"></div>
+  </div>
+</div>
+
+<main class="shell" id="main"></main>
+
+<div class="nav">
+  <button id="prev" type="button">← Atrás</button>
+  <span class="sp" id="pos"></span>
+  <button id="next" type="button" class="pri">Siguiente →</button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. ESQUEMA DEL FORMULARIO
+   Cada campo lleva su ayuda en lenguaje llano: quien anota no
+   necesita saber hidráulica, solo seguir la instrucción.
+   ============================================================ */
+const SECCIONES = [
+{ id:"visita", titulo:"Datos de la visita", intro:"Quién levanta la información, cuándo y con quién. Esto va en la carátula de la ficha y da trazabilidad al dato.",
+  campos:[
+  {id:"v_persona", t:"text", l:"Nombre de quien realiza el levantamiento", h:"Escribe tu nombre completo."},
+  {id:"v_fecha", t:"date", l:"Fecha de la visita", h:"El día en que estás en la instalación."},
+  {id:"v_hora", t:"time", l:"Hora de inicio", h:"Importa porque el cloro y la temperatura varían durante el día."},
+  {id:"v_estab", t:"text", l:"Nombre del establecimiento", h:"Tal como figura en el letrero o en la licencia.", def:"Sauna Spa Apolo"},
+  {id:"v_dir", t:"text", l:"Dirección exacta", h:"Calle, número y referencia para llegar."},
+  {id:"v_distrito", t:"text", l:"Distrito", def:"Cerro Colorado"},
+  {id:"v_resp", t:"text", l:"Persona que atiende la visita", h:"Nombre de quien te acompaña y te da la información."},
+  {id:"v_cargo", t:"text", l:"Su cargo", h:"Administrador, operador, dueño, encargado de mantenimiento."},
+  {id:"v_tel", t:"text", l:"Su teléfono", h:"Pídelo siempre. Vas a tener dudas después y una llamada te ahorra otro viaje."},
+  {id:"v_tipo", t:"sel", l:"¿Qué tipo de piscina es?", h:"Si el acceso está restringido a clientes del sauna, es privada de uso colectivo.",
+   op:["Privada de uso colectivo","De uso público"], def:"Privada de uso colectivo"},
+  {id:"v_techo", t:"sel", l:"¿Está techada o al aire libre?", h:"Mira si el estanque tiene techo encima.", op:["Cubierta (techada)","Al aire libre"]},
+  {id:"v_clima", t:"sel", l:"¿El agua es temperada?", h:"Toca el agua o pregunta. Si hay caldera o equipo de calentamiento, es temperada.", op:["Sí, temperada","No, a temperatura ambiente"]}
+]},
+
+{ id:"piscina", titulo:"1 · Estanque de la piscina", intro:"Mide tú mismo, no copies del plano. Estas medidas deciden la clasificación de la piscina y el caudal que la norma le exige.",
+  campos:[
+  {id:"p_largo", t:"num", u:"m", l:"Largo interior", h:"El lado más largo, medido por dentro del estanque a la altura del agua. Si el borde es irregular, toma dos medidas y anota el promedio."},
+  {id:"p_ancho", t:"num", u:"m", l:"Ancho interior", h:"El lado más corto, medido igual que el largo."},
+  {id:"p_pmin", t:"num", u:"m", l:"Profundidad en la zona menos honda", h:"Mete el flexómetro vertical hasta tocar el fondo y lee la marca que queda justo en la superficie del agua."},
+  {id:"p_pmax", t:"num", u:"m", l:"Profundidad en la zona más honda", h:"Igual que la anterior, pero en el punto más profundo que encuentres."},
+  {id:"p_dist", t:"num", u:"m", l:"Distancia entre esos dos puntos", h:"Camina por el borde y mide cuántos metros hay entre el punto menos hondo y el más hondo. Sirve para calcular la pendiente del fondo."},
+  {id:"p_pts", t:"area", l:"Otras profundidades medidas", h:"Anota al menos 6 puntos en total: las 4 esquinas, el centro y la zona más honda. Escribe así — esquina noreste: 0.88 m."},
+  {id:"p_rev", t:"text", l:"Material del revestimiento", h:"Mayólica, cerámico, pintura epóxica, fibra de vidrio, concreto pulido."},
+  {id:"p_estado", t:"sel", l:"Estado del revestimiento", h:"Busca fisuras, desprendimientos, zonas rugosas o manchas que no salen con limpieza.", op:["Bueno","Regular","Malo"]},
+  {id:"p_esc", t:"num", u:"und", l:"Número de escaleras", h:"Cuenta las escaleras de acceso al estanque."},
+  {id:"p_paso", t:"num", u:"cm", l:"Ancho del paso de la escalera", h:"Mide el ancho del escalón donde se pisa."},
+  {id:"p_senal", t:"bool", l:"¿Está marcada la profundidad a la vista?", h:"Busca números pintados o placas que indiquen qué tan honda es cada zona."},
+  {id:"p_obs", t:"area", l:"Observaciones del estanque", h:"Ángulos, recodos, obstáculos, fugas visibles, cualquier cosa rara."}
+]},
+
+{ id:"patera", titulo:"2 · Estanque de la patera", intro:"La patera es la poza para niños menores de cinco años. Este bloque es el más importante de toda la visita: sin su volumen no se puede evaluar el sistema compartido.",
+  campos:[
+  {id:"pt_hay", t:"bool", l:"¿Existe patera en la instalación?", h:"Es la poza pequeña y baja, para niños chicos.", def:"Sí"},
+  {id:"pt_largo", t:"num", u:"m", l:"Largo interior de la patera", h:"Igual que con la piscina: por dentro, a la altura del agua."},
+  {id:"pt_ancho", t:"num", u:"m", l:"Ancho interior de la patera"},
+  {id:"pt_pmin", t:"num", u:"m", l:"Profundidad mínima de la patera", h:"En la zona menos honda."},
+  {id:"pt_pmax", t:"num", u:"m", l:"Profundidad máxima de la patera", h:"En la zona más honda."},
+  {id:"pt_dist", t:"num", u:"m", l:"Distancia entre esos dos puntos", h:"Para calcular la pendiente del fondo."},
+  {id:"pt_anti", t:"bool", l:"¿El piso de la patera es antideslizante?", h:"Pásale la mano: si resbala con el pie mojado, no lo es."},
+  {id:"pt_paso", t:"bool", l:"¿Un niño puede pasar solo de la patera a la piscina?", h:"Mira si hay barrera, desnivel o separación que lo impida. Si puede pasar caminando sin ayuda, marca Sí."},
+  {id:"pt_capt", t:"area", l:"Captación y retornos propios de la patera", h:"¿Tiene sus propios desnatadores y boquillas, o todo pasa por los de la piscina? Descríbelo y cuenta cuántos hay."},
+  {id:"pt_obs", t:"area", l:"Observaciones de la patera"}
+]},
+
+{ id:"captacion", titulo:"3 · Por dónde sale el agua", intro:"El agua sale del estanque por los desnatadores (las cajas en la pared, al nivel del agua) y por el sumidero de fondo (la rejilla del piso).",
+  campos:[
+  {id:"c_desn", t:"num", u:"und", l:"Número de desnatadores", h:"Son las tapas rectangulares en la pared del estanque, justo al nivel del agua. Ábrelas: adentro tienen un canastillo. Cuéntalas todas."},
+  {id:"c_desn_ub", t:"area", l:"Ubicación de cada desnatador", h:"Para cada uno, mide a cuántos metros está de las dos esquinas más cercanas. Escribe así — desnatador 1: a 2.10 m de la esquina norte y 1.40 m de la este."},
+  {id:"c_desn_d", t:"num", u:"pulg", l:"Diámetro de la tubería de salida del desnatador", h:"Mira la tubería que sale por detrás o debajo del desnatador."},
+  {id:"c_sum", t:"bool", l:"¿Hay sumidero o rejilla en el fondo del estanque?", h:"Mira el piso del estanque, en la parte más honda. Si el agua está turbia, usa la linterna."},
+  {id:"c_dren_l", t:"num", u:"cm", l:"Largo de la boca del sumidero", h:"Mide la rejilla del fondo por su lado largo."},
+  {id:"c_dren_a", t:"num", u:"cm", l:"Ancho de la boca del sumidero", h:"La misma rejilla, por su lado corto."},
+  {id:"c_dren_t", t:"num", u:"pulg", l:"Diámetro de la tubería del sumidero", h:"Si no la ves, pregunta al operador o búscala en la sala de máquinas."},
+  {id:"c_can", t:"bool", l:"¿Hay canaleta alrededor del estanque?", h:"Es el canal con rejilla que rodea la piscina en el piso, para que el agua que salpica no se acumule."},
+  {id:"c_can_s", t:"num", u:"und", l:"Número de sumideros de la canaleta", h:"Cuenta los desagües que tiene la canaleta a lo largo de todo su recorrido."},
+  {id:"c_obs", t:"area", l:"Observaciones de la captación"}
+]},
+
+{ id:"tuberias", titulo:"4 · Tuberías del sistema", intro:"Aquí se decide si el cálculo de la bomba se puede hacer o no. Cuenta los accesorios uno por uno: no se pueden estimar después desde el escritorio.",
+  campos:[
+  {id:"t_s_d", t:"num", u:"pulg", l:"Diámetro de la tubería de succión", h:"Es la que va del estanque hacia la bomba. Si no tiene marca legible, rodéala con cinta métrica flexible, anota el perímetro y divídelo entre 3.1416."},
+  {id:"t_s_l", t:"num", u:"m", l:"Longitud de la tubería de succión", h:"Mide con wincha desde el estanque hasta la bomba, siguiendo el recorrido real, incluyendo los tramos verticales."},
+  {id:"t_i_d", t:"num", u:"pulg", l:"Diámetro de la tubería de impulsión", h:"La que sale de la bomba hacia el filtro."},
+  {id:"t_i_l", t:"num", u:"m", l:"Longitud de la tubería de impulsión"},
+  {id:"t_r_d", t:"num", u:"pulg", l:"Diámetro de la tubería de retorno", h:"La que lleva el agua ya filtrada de vuelta al estanque."},
+  {id:"t_r_l", t:"num", u:"m", l:"Longitud de la tubería de retorno"},
+  {id:"t_mat", t:"text", l:"Material de las tuberías", h:"PVC, CPVC, acero galvanizado, HDPE. Suele venir impreso en la tubería."},
+  {id:"t_c90", t:"num", u:"und", l:"Cantidad de codos de 90 grados", h:"Los codos que hacen un giro en escuadra. Recorre todo el circuito y cuéntalos."},
+  {id:"t_c45", t:"num", u:"und", l:"Cantidad de codos de 45 grados", h:"Giros suaves, en diagonal."},
+  {id:"t_tee", t:"num", u:"und", l:"Cantidad de tees", h:"Las piezas en forma de T, donde la tubería se divide o se junta."},
+  {id:"t_red", t:"num", u:"und", l:"Cantidad de reducciones", h:"Donde la tubería cambia de un diámetro a otro."},
+  {id:"t_uni", t:"num", u:"und", l:"Cantidad de uniones desmontables", h:"Uniones universales o bridas, que permiten desarmar el tramo."},
+  {id:"t_val", t:"area", l:"Válvulas: tipo, diámetro y si estaban abiertas o cerradas", h:"Anota cada una. Escribe así — válvula de bola de 2 pulgadas en la succión, abierta."},
+  {id:"t_chk", t:"bool", l:"¿Hay válvula check en la succión de la bomba?", h:"Es una válvula que deja pasar el agua en un solo sentido. Suele decir CHECK o tener una flecha marcada."},
+  {id:"t_pur", t:"bool", l:"¿Hay pozo de drenaje y válvula de purga en la parte más baja?", h:"Sirve para vaciar el sistema y sacar el sedimento acumulado."},
+  {id:"t_nudo", t:"area", l:"Descripción del punto donde se juntan piscina y patera", h:"El dato más importante de esta sección. Describe dónde exactamente se unen las tuberías de los dos estanques y con qué diámetros. Tómale foto con el flexómetro extendido al lado."},
+  {id:"t_ind", t:"bool", l:"¿Hay válvula que permita separar los dos circuitos?", h:"Es decir, ¿se puede cerrar el paso a la patera y dejar circulando solo la piscina, o al revés?"}
+]},
+
+{ id:"bombeo", titulo:"5 · Bomba", intro:"Copia la placa completa y fotografíala. Si la placa está borrosa o ilegible, anótalo: es un dato perdido que condiciona todo el cálculo.",
+  campos:[
+  {id:"b_n", t:"num", u:"und", l:"Número de bombas instaladas", h:"Cuenta todas, incluso las que estén apagadas o de repuesto."},
+  {id:"b_marca", t:"text", l:"Marca", h:"Está en la placa metálica pegada al motor."},
+  {id:"b_mod", t:"text", l:"Modelo", h:"En la misma placa."},
+  {id:"b_hp", t:"num", u:"HP", l:"Potencia", h:"Aparece como HP o como kW. Si dice kW, anótalo igual y avisa en las observaciones."},
+  {id:"b_q", t:"num", u:"m³/h", l:"Caudal de placa", h:"Puede venir como m³/h, L/min o GPM. Anota el número y en observaciones escribe en qué unidad estaba."},
+  {id:"b_adt", t:"num", u:"m", l:"Altura dinámica de placa", h:"Suele decir H, HDT o Head, en metros o en pies."},
+  {id:"b_rpm", t:"text", l:"Revoluciones por minuto", h:"Aparece como RPM."},
+  {id:"b_volt", t:"text", l:"Tensión y fases", h:"Por ejemplo 220V monofásico o 380V trifásico."},
+  {id:"b_cota", t:"num", u:"m", l:"Altura del eje de la bomba respecto al agua", h:"Mide cuántos metros hay entre la superficie del agua de la piscina y el eje de la bomba. Si la bomba está MÁS ABAJO que el agua, anota el número normal. Si está MÁS ARRIBA, anótalo con signo menos adelante."},
+  {id:"b_tram", t:"bool", l:"¿Tiene trampa de pelos?", h:"Es un recipiente transparente con un canastillo, justo antes de la bomba."},
+  {id:"b_hrs", t:"num", u:"h/día", l:"Horas que la bomba funciona al día", h:"Pregunta al operador. Si hay temporizador, revísalo y compara."},
+  {id:"b_qmed", t:"num", u:"m³/h", l:"Caudal medido hoy", h:"Si hay caudalímetro, léelo. Si no, usa la calculadora de abajo con un balde y un cronómetro.", aux:"balde"},
+  {id:"b_obs", t:"area", l:"Estado de la bomba", h:"Ruido raro, vibración, fugas, si se calienta, si hay más de una y solo funciona una."}
+]},
+
+{ id:"filtro", titulo:"6 · Filtro", intro:"El diámetro del tanque es imprescindible: de ahí sale el área de filtración y, con ella, si el filtro da abasto o no.",
+  campos:[
+  {id:"f_n", t:"num", u:"und", l:"Número de filtros", h:"Son los tanques grandes, generalmente ovalados o cilíndricos."},
+  {id:"f_d", t:"num", u:"m", l:"Diámetro del tanque del filtro", h:"Mide de lado a lado por la parte más ancha. Si no puedes, rodéalo con cinta métrica, anota el perímetro y divídelo entre 3.1416.", aux:"perim"},
+  {id:"f_marca", t:"text", l:"Marca y modelo del filtro", h:"En la etiqueta del tanque. Fotografíala."},
+  {id:"f_qp", t:"num", u:"m³/h", l:"Caudal de diseño indicado en la etiqueta", h:"Si la etiqueta lo indica."},
+  {id:"f_medio", t:"sel", l:"¿Con qué está lleno el filtro?", h:"Pregunta al operador. Si hay una tapa superior que se pueda abrir, mira adentro. La arena se ve como arena de playa gruesa.",
+   op:["Arena de alto rendimiento","Cuarzo chancado","Tierra de diatomeas","Cartuchos","Otro / no se pudo determinar"]},
+  {id:"f_capa", t:"num", u:"cm", l:"Altura de la capa filtrante", h:"Si puedes abrir la tapa, mide desde el fondo del lecho hasta la superficie del material. Si no, pregunta y anota que es dato referido."},
+  {id:"f_libre", t:"num", u:"cm", l:"Espacio libre por encima del material", h:"Desde la superficie del material filtrante hasta la boca de salida de lavado."},
+  {id:"f_man", t:"sel", l:"¿Tiene manómetros?", h:"Son los relojes redondos que marcan presión. Deben ir uno a la entrada y otro a la salida del filtro.",
+   op:["Sí, entrada y salida","Solo uno","No tiene"]},
+  {id:"f_p1", t:"num", u:"psi", l:"Lectura del manómetro de entrada", h:"Anota el número que marca en este momento."},
+  {id:"f_p2", t:"num", u:"psi", l:"Lectura del manómetro de salida"},
+  {id:"f_visor", t:"bool", l:"¿Tiene visor de vidrio para ver el lavado?", h:"Una mirilla transparente en la tubería de desagüe del filtro."},
+  {id:"f_frec", t:"num", u:"días", l:"Cada cuántos días lavan el filtro", h:"Pregunta al operador."},
+  {id:"f_dur", t:"num", u:"min", l:"Cuánto dura el lavado", h:"En minutos."},
+  {id:"f_cota", t:"sel", l:"¿El filtro está más arriba o más abajo que el agua de la piscina?", h:"Compara visualmente la altura del filtro con el nivel del agua del estanque.", op:["Más abajo que el agua","Más arriba que el agua","Al mismo nivel"]}
+]},
+
+{ id:"desinf", titulo:"7 · Desinfección y productos químicos", intro:"El reglamento exige que la dosificación sea automática. Si el operador echa el cloro a mano con un balde, eso es un hallazgo.",
+  campos:[
+  {id:"d_auto", t:"bool", l:"¿La dosificación del desinfectante es automática?", h:"Pregunta cómo se aplica el cloro. Si hay un equipo que lo inyecta solo, es automática. Si una persona lo echa a mano, no lo es."},
+  {id:"d_tipo", t:"text", l:"Qué desinfectante usan", h:"Hipoclorito de calcio, hipoclorito de sodio, tricloro en pastillas, generador de cloro salino. Anota también la marca y la concentración del envase."},
+  {id:"d_eq", t:"text", l:"Equipo dosificador: marca y modelo", h:"Si existe. Fotografía la placa."},
+  {id:"d_pto", t:"text", l:"En qué punto se inyecta el desinfectante", h:"Antes del filtro, después del filtro, o directo al estanque."},
+  {id:"d_dosis", t:"text", l:"Cuánto aplican por día", h:"Pregunta cantidad y frecuencia. Por ejemplo: dos kilos cada mañana."},
+  {id:"d_otros", t:"area", l:"Otros productos que aplican", h:"Alguicida, regulador de pH, floculante, clarificador. Anota cuál, cuánto y cada cuánto."},
+  {id:"d_alm", t:"bool", l:"¿Hay un ambiente exclusivo para guardar los químicos?", h:"Debe ser un espacio aparte, ventilado y donde los usuarios no puedan entrar."},
+  {id:"d_alm_obs", t:"area", l:"Cómo está el almacén de químicos", h:"¿Ventilado? ¿Cerrado con llave? ¿Hay cartel de seguridad con antídotos? ¿Los envases están bien tapados?"},
+  {id:"d_cal", t:"bool", l:"¿Hay equipo de calentamiento del agua?", h:"Caldera, bomba de calor, intercambiador, paneles solares."},
+  {id:"d_cal_t", t:"text", l:"Tipo y potencia del equipo de calentamiento", h:"Si existe, copia los datos de su placa."}
+]},
+
+{ id:"retorno", titulo:"8 · Retorno del agua y reposición", intro:"Por dónde vuelve el agua tratada al estanque, y de dónde sale el agua que se repone.",
+  campos:[
+  {id:"r_n", t:"num", u:"und", l:"Número de boquillas de retorno", h:"Son las boquillas por donde entra el agua al estanque. Se sienten con la mano: botan chorro."},
+  {id:"r_sep", t:"num", u:"m", l:"Separación máxima entre dos boquillas vecinas", h:"Mide la distancia entre boquillas y anota la mayor de todas."},
+  {id:"r_alt", t:"num", u:"cm", l:"A qué profundidad están las boquillas", h:"Mide desde la superficie del agua hasta el centro de la boquilla. Si están en el piso del estanque, escribe la profundidad total."},
+  {id:"r_d", t:"num", u:"pulg", l:"Diámetro de cada boquilla"},
+  {id:"r_tc", t:"bool", l:"¿Hay tanque de compensación?", h:"Es un tanque intermedio que recibe el agua antes de entrar al sistema y regula el nivel. Pregunta al operador."},
+  {id:"r_tc_v", t:"num", u:"m³", l:"Volumen del tanque de compensación", h:"Si existe, mide sus dimensiones internas."},
+  {id:"r_fte", t:"sel", l:"De dónde viene el agua de reposición", h:"Pregunta al operador.", op:["Red pública","Pozo","Cisterna / camión","Otra"]},
+  {id:"r_med", t:"bool", l:"¿Hay medidor de agua a la entrada del local?", h:"El típico medidor con numeritos."},
+  {id:"r_med_l", t:"text", l:"Lectura del medidor", h:"Copia el número completo tal como aparece, con decimales."},
+  {id:"r_repo", t:"num", u:"m³/día", l:"Cuánta agua reponen al día", h:"Del medidor, o estimado por el operador."},
+  {id:"r_des", t:"bool", l:"¿El desagüe del estanque va directo al desagüe del local o al colector público?", h:"Pregunta a dónde va el agua cuando vacían la piscina. Ojo: la norma lo prohíbe."},
+  {id:"r_grif", t:"num", u:"und", l:"Número de grifos para tomar muestras de agua", h:"Pequeñas llaves instaladas en la tubería para sacar muestras. Deben ser tres."}
+]},
+
+{ id:"agua", titulo:"9 · Calidad del agua medida hoy", intro:"Mide en el sitio, con el agua en operación normal. Toma las muestras en varios puntos del estanque, no solo en uno.",
+  campos:[
+  {id:"a_cll", t:"num", u:"mg/L", l:"Cloro residual libre", h:"Con el kit DPD, pastilla número 1. Es el valor más importante de todos."},
+  {id:"a_clc", t:"num", u:"mg/L", l:"Cloro residual combinado", h:"Es el cloro total menos el cloro libre. Si tu kit da solo dos valores, anótalos y el cálculo lo hace la ficha."},
+  {id:"a_clt", t:"num", u:"mg/L", l:"Cloro total", h:"Con el kit DPD, pastillas 1 y 3 juntas."},
+  {id:"a_ph", t:"num", u:"—", l:"pH del agua", h:"Con pHmetro calibrado, o con las tiras comparando el color."},
+  {id:"a_turb", t:"num", u:"UNT", l:"Turbidez", h:"Solo si tienes turbidímetro. Si no, déjalo vacío y usa la prueba del disco de abajo."},
+  {id:"a_disco", t:"bool", l:"¿Se distingue con facilidad un disco negro de 15 cm en el fondo?", h:"Pon el disco en la parte más honda y mira desde el borde. Si lo distingues con claridad, marca Sí."},
+  {id:"a_ta", t:"num", u:"°C", l:"Temperatura del agua", h:"Con termómetro, sumergido medio minuto. Dato crítico: define dónde deben ir las boquillas de retorno."},
+  {id:"a_tb", t:"num", u:"°C", l:"Temperatura del ambiente", h:"Del aire del recinto, a la sombra."},
+  {id:"a_hr", t:"num", u:"%", l:"Humedad relativa del ambiente", h:"Con higrómetro, solo si la piscina es techada."},
+  {id:"a_term", t:"bool", l:"¿Hay termómetro e higrómetro a la vista de los usuarios?", h:"Deben estar visibles en el recinto."},
+  {id:"a_mues", t:"bool", l:"¿Se tomaron muestras para laboratorio?", h:"Para análisis microbiológico y de nitritos y nitratos."},
+  {id:"a_obs", t:"area", l:"Observaciones del agua", h:"Color, olor, espuma, algas en paredes, sedimento en el fondo, insectos."}
+]},
+
+{ id:"entorno", titulo:"10 · Entorno, servicios y documentos", intro:"Lo que rodea al estanque y los papeles del establecimiento. Esta sección alimenta la Ficha de Inspección de la Directiva 033.",
+  campos:[
+  {id:"e_paseo", t:"num", u:"m", l:"Ancho del pasillo que rodea el estanque", h:"Mide desde el borde de la piscina hasta la pared u obstáculo más cercano, en el punto más angosto."},
+  {id:"e_anti", t:"bool", l:"¿El piso del pasillo es antideslizante?", h:"Pruébalo con el pie mojado, con cuidado."},
+  {id:"e_desc", t:"num", u:"m²", l:"Área de la zona de descanso", h:"El espacio con reposeras o sillas. Mide largo por ancho aproximado."},
+  {id:"e_som", t:"num", u:"m²", l:"Área con sombra dentro de esa zona", h:"La parte techada o bajo sombrilla."},
+  {id:"e_duchas", t:"num", u:"und", l:"Número de duchas disponibles", h:"Cuenta solo las que funcionan."},
+  {id:"e_lp", t:"bool", l:"¿Hay lavapiés a la entrada del estanque?", h:"Una poza baja con desinfectante por donde se pasa antes de entrar."},
+  {id:"e_ino", t:"num", u:"und", l:"Número total de inodoros", h:"Sumando damas y varones."},
+  {id:"e_uri", t:"num", u:"und", l:"Número de urinarios"},
+  {id:"e_lav", t:"num", u:"und", l:"Número de lavatorios"},
+  {id:"e_vest", t:"num", u:"m²", l:"Área de vestuarios", h:"Largo por ancho, aproximado."},
+  {id:"e_ilum", t:"num", u:"m²", l:"Área de ventanas y aberturas de luz natural", h:"Solo si la piscina es techada. Suma el área de todas las ventanas y tragaluces."},
+  {id:"e_vent", t:"num", u:"m²", l:"Área de aberturas de ventilación", h:"Las que se pueden abrir o están permanentemente abiertas."},
+  {id:"e_sala", t:"area", l:"Descripción de la sala de máquinas", h:"Dimensiones aproximadas, si está ventilada, si se puede circular alrededor de los equipos, orden general, si hay filtraciones o humedad."},
+  {id:"e_libro", t:"sel", l:"¿Llevan libro de registro diario?", h:"Un cuaderno donde anotan cada día el cloro, el pH y la temperatura. Pídelo y fotografía varias páginas.",
+   op:["Sí, y está al día","Sí, pero desactualizado","No existe"]},
+  {id:"e_aprob", t:"bool", l:"¿Tienen aprobación sanitaria vigente y a la vista?", h:"Una Resolución Directoral de la DIRESA. Pide copia."},
+  {id:"e_tec", t:"bool", l:"¿Hay personal técnico capacitado para operar la piscina?", h:"Pregunta quién opera el sistema y si tiene capacitación acreditada."},
+  {id:"e_boti", t:"bool", l:"¿Hay botiquín de primeros auxilios señalizado?"},
+  {id:"e_salva", t:"bool", l:"¿Hay salvavidas, boyas o elementos de rescate a la vista?"},
+  {id:"e_normas", t:"bool", l:"¿Hay cartel con las normas de uso para el usuario?"},
+  {id:"e_fum", t:"bool", l:"¿Tienen certificado de fumigación de los últimos seis meses?", h:"Pide verlo."},
+  {id:"e_vac", t:"text", l:"Fecha del último vaciado total del estanque", h:"Pregunta al operador. La norma exige al menos uno cada dos años."},
+  {id:"e_aedes", t:"bool", l:"¿Se encontraron recipientes con agua estancada?", h:"Baldes, floreros, llantas, canaletas tapadas. Son criaderos potenciales de zancudo."},
+  {id:"e_mod", t:"area", l:"¿Han modificado el sistema desde que se construyó?", h:"Cambios de bomba, de filtro, tuberías nuevas, ampliaciones. Pregunta cuándo y por qué."},
+  {id:"e_prob", t:"area", l:"¿Qué problemas se repiten?", h:"Agua turbia, cloro que no sube, algas, bomba que se malogra. Esto alimenta la discusión de tu tesis."}
+]},
+
+{ id:"expediente", titulo:"11 · Documentos del expediente", intro:"El Art. 9° exige cinco documentos. Marca cuáles te entregaron. Los que falten son, tal cual, la declaración de limitaciones de tu Capítulo III.",
+  campos:[
+  {id:"x_mem", t:"bool", l:"Memoria descriptiva", h:"El documento que describe el proyecto en texto."},
+  {id:"x_arq", t:"bool", l:"Planos de ubicación y arquitectura", h:"Incluye cortes y detalles de la piscina."},
+  {id:"x_san", t:"bool", l:"Planos de instalaciones sanitarias", h:"Vista en planta, secciones, detalles y el isométrico del equipo de recirculación."},
+  {id:"x_man", t:"bool", l:"Manual de operación y mantenimiento"},
+  {id:"x_esp", t:"bool", l:"Especificaciones técnicas del sistema de recirculación"},
+  {id:"x_cal", t:"bool", l:"Memoria de cálculo", h:"No está en la lista del Art. 9°, pero si existe te ahorra semanas."},
+  {id:"x_obs", t:"area", l:"Observaciones sobre el expediente", h:"Quién lo tiene, si te lo van a entregar después, en qué formato, si está firmado por ingeniero sanitario colegiado."}
+]}
+];
+
+/* ============================================================
+   2. ESTADO Y PERSISTENCIA
+   ============================================================ */
+const CLAVE = "fichaCampoApolo_v1";
+let datos = {};
+let paso = 0;
+
+function cargar(){
+  try{ const s = localStorage.getItem(CLAVE); if(s) datos = JSON.parse(s)||{}; }catch(e){ datos = {}; }
+  SECCIONES.forEach(s=>s.campos.forEach(c=>{ if(c.def!==undefined && datos[c.id]===undefined) datos[c.id]=c.def; }));
+}
+function guardar(){
+  try{ localStorage.setItem(CLAVE, JSON.stringify(datos)); }catch(e){ avisar("No se pudo guardar en este navegador"); }
+}
+function avisar(m){
+  const t=document.getElementById("toast"); t.textContent=m; t.classList.add("on");
+  clearTimeout(avisar._t); avisar._t=setTimeout(()=>t.classList.remove("on"),2200);
+}
+const num = id => { const v=parseFloat(datos[id]); return isFinite(v)?v:null; };
+const si  = id => datos[id]==="Sí";
+
+/* ============================================================
+   3. MOTOR DE CALCULO Y VERIFICACION NORMATIVA
+   Cada resultado dice: valor, exigencia, artículo y veredicto.
+   ============================================================ */
+const PULG = 0.0254;
+const VEL_FILTRO = {
+  "Arena de alto rendimiento":37.8, "Cuarzo chancado":25.2,
+  "Tierra de diatomeas":5.04, "Cartuchos":0.945
+};
+
+function calcular(){
+  const R=[]; const G=g=>R.push({grupo:g});
+  const add=(t,v,exig,art,est,x)=>R.push({t,v,exig,art,est,x});
+  const falta=(t,q,art)=>R.push({t,v:"Falta dato",exig:q,art,est:"na"});
+
+  /* --- geometría y volúmenes --- */
+  G("Geometría y volumen");
+  const pl=num("p_largo"), pa=num("p_ancho"), pmin=num("p_pmin"), pmax=num("p_pmax");
+  let areaP=null, volP=null, profMed=null;
+  if(pl&&pa){ areaP=pl*pa; add("Área del espejo de agua", areaP.toFixed(2)+" m²","—","", "ok",
+      "Calculada como largo por ancho."); }
+  else falta("Área del espejo de agua","Requiere largo y ancho","");
+  if(pmin&&pmax){ profMed=(pmin+pmax)/2;
+    add("Profundidad media", profMed.toFixed(2)+" m","—","","ok","Promedio entre la mínima y la máxima medidas.");
+    let est="bad", x="";
+    if(pmin>=1.20){ est="ok"; x="Cumple el mínimo de 1.20 m para piscina recreacional."; }
+    else if(pmax<=0.40&&pmin>=0.20){ est="ok"; x="Está dentro del rango de patera (0.20 a 0.40 m)."; }
+    else x="La profundidad no alcanza el mínimo de 1.20 m de una piscina recreacional, ni cae en el rango de patera (0.20 a 0.40 m). El estanque no encaja en ninguna categoría del reglamento, y eso define qué caudal se le exige.";
+    add("Clasificación por profundidad", pmin.toFixed(2)+" a "+pmax.toFixed(2)+" m",
+        "Recreacional ≥ 1.20 m · Patera 0.20 a 0.40 m","Art. 17°",est,x);
+  } else falta("Clasificación por profundidad","Requiere profundidad mínima y máxima","Art. 17°");
+  if(areaP&&profMed){ volP=areaP*profMed;
+    add("Volumen de la piscina", volP.toFixed(2)+" m³","—","","ok","Área por profundidad media."); }
+  const pd=num("p_dist");
+  if(pmin&&pmax&&pd&&pd>0){ const pend=((pmax-pmin)/pd)*100;
+    add("Pendiente del fondo de la piscina", pend.toFixed(1)+" %","No mayor de 10 %","Art. 17°",
+        pend<=10?"ok":"bad", "Desnivel entre el punto más hondo y el menos hondo, sobre la distancia entre ambos."); }
+
+  let volPt=null;
+  if(si("pt_hay")){
+    const tl=num("pt_largo"), ta=num("pt_ancho"), tmin=num("pt_pmin"), tmax=num("pt_pmax");
+    if(tl&&ta&&tmin&&tmax){ const areaPt=tl*ta, profPt=(tmin+tmax)/2; volPt=areaPt*profPt;
+      add("Volumen de la patera", volPt.toFixed(2)+" m³","—","","ok","Sin este dato no se puede evaluar el sistema compartido.");
+      add("Profundidad de la patera", tmin.toFixed(2)+" a "+tmax.toFixed(2)+" m","Entre 0.20 y 0.40 m","Art. 17°",
+          (tmin>=0.20&&tmax<=0.40)?"ok":"bad","");
+    } else falta("Volumen de la patera","Requiere largo, ancho y profundidades","Art. 40°");
+    if(si("pt_paso")) add("Acceso de niños a otro estanque","Sí pueden pasar","El emplazamiento debe impedirlo","Art. 17°","bad",
+      "Ítem 1.12 de la Ficha de Inspección Técnica de la Directiva 033.");
+  }
+
+  /* --- caudal exigido vs disponible: el corazón del diagnóstico --- */
+  G("Recirculación — el cálculo central");
+  const publica = datos.v_tipo==="De uso público";
+  const recPisc = publica?4:3;
+  let qReqP=null, qReqPt=null, qReq=null;
+  if(volP){ qReqP = volP*recPisc/24;
+    add("Caudal que exige la piscina", qReqP.toFixed(2)+" m³/h",
+        recPisc+" recirculaciones al día","Art. 40°","ok",
+        "Volumen por "+recPisc+" recirculaciones, repartido en 24 horas."); }
+  if(volPt){ qReqPt = volPt*4/24;
+    add("Caudal que exige la patera", qReqPt.toFixed(2)+" m³/h","4 recirculaciones al día","Art. 40°","ok",
+        "Las pateras exigen 4 recirculaciones diarias, más que la piscina."); }
+  if(qReqP!==null||qReqPt!==null){ qReq=(qReqP||0)+(qReqPt||0);
+    add("Caudal total requerido", qReq.toFixed(2)+" m³/h","Suma de ambos estanques","Art. 40°","ok",
+        "Si un mismo sistema sirve a los dos, debe cubrir la suma de ambas exigencias."); }
+  const qMed = num("b_qmed") ?? num("b_q");
+  if(qMed!==null&&qReq!==null){
+    const d=qMed-qReq, ok=d>=0;
+    add("Caudal disponible contra el requerido", qMed.toFixed(2)+" m³/h",
+        "Mínimo "+qReq.toFixed(2)+" m³/h","Art. 40°", ok?"ok":"bad",
+        ok ? "Sobran "+d.toFixed(2)+" m³/h." :
+        "Faltan "+Math.abs(d).toFixed(2)+" m³/h, es decir un "+(Math.abs(d)/qReq*100).toFixed(0)+" % por debajo de lo exigido. Este es el hallazgo central del diagnóstico.");
+  } else if(qReq!==null) falta("Caudal disponible contra el requerido","Requiere el caudal medido de la bomba","Art. 40°");
+  if(qMed&&volP){ const per=volP/qMed;
+    add("Periodo de recirculación actual de la piscina", per.toFixed(2)+" h",
+        "Equivale a "+(24/per).toFixed(1)+" recirculaciones al día","Art. 40°",
+        (24/per)>=recPisc?"ok":"bad","Tiempo que tarda el sistema en pasar todo el volumen una vez."); }
+  if(qMed&&volPt){ const per=volPt/qMed;
+    add("Si ese caudal se dedicara solo a la patera", per.toFixed(2)+" h",
+        "Equivale a "+(24/per).toFixed(1)+" recirculaciones al día","Art. 40°","na",
+        "Referencial: en la práctica el caudal se reparte entre ambos estanques, así que a cada uno le llega menos."); }
+  const hrs=num("b_hrs");
+  if(hrs!==null&&hrs<24) add("Horas de operación de la bomba", hrs+" h/día","El cálculo normativo asume 24 h","Art. 40°",
+    hrs>=24?"ok":"warn","Si la bomba no trabaja las 24 horas, las recirculaciones diarias reales bajan en la misma proporción.");
+
+  /* --- filtración --- */
+  G("Filtración");
+  const fd=num("f_d"), fn=num("f_n")||1;
+  let areaF=null;
+  if(fd){ areaF=fn*Math.PI*fd*fd/4;
+    add("Área de filtración", areaF.toFixed(3)+" m²","—","","ok",
+        fn>1?("Suma de "+fn+" filtros de "+fd+" m de diámetro."):"Superficie del lecho filtrante."); }
+  else falta("Área de filtración","Requiere el diámetro del tanque","Art. 46°");
+  if(areaF&&qMed){
+    const tasa=qMed/areaF, lim=VEL_FILTRO[datos.f_medio];
+    if(lim) add("Velocidad de filtración", tasa.toFixed(2)+" m³/m²·h",
+        "Máximo "+lim+" m³/m²·h para "+datos.f_medio.toLowerCase(),"Art. 46°",
+        tasa<=lim?"ok":"bad", tasa<=lim?"Dentro del límite del medio filtrante.":
+        "Supera el máximo permitido: el agua pasa demasiado rápido y el filtro no retiene bien.");
+    else add("Velocidad de filtración", tasa.toFixed(2)+" m³/m²·h","Depende del medio filtrante","Art. 46°","warn",
+        "Falta identificar el material del filtro para saber qué límite aplica.");
+  }
+  const cap=num("f_capa");
+  if(cap!==null) add("Altura de la capa filtrante", cap+" cm","Mínimo 90 cm","Art. 46°",cap>=90?"ok":"bad","");
+  const lib=num("f_libre");
+  if(lib!==null) add("Espacio libre sobre el material", lib+" cm","Mínimo 45 cm","Art. 46°",lib>=45?"ok":"bad",
+    "Necesario para lavar el filtro sin perder arena.");
+  if(datos.f_man) add("Manómetros del filtro", datos.f_man,"Uno a la entrada y otro a la salida","Art. 46°",
+    datos.f_man==="Sí, entrada y salida"?"ok":"bad","");
+  if(datos.f_cota==="Más arriba que el agua") add("Posición del filtro","Sobre el nivel del agua",
+    "Exige válvula automática de purga de aire","Art. 46°","warn","Verifica si esa válvula está instalada.");
+
+  /* --- captación --- */
+  G("Captación y retorno");
+  if(areaP){
+    const req=Math.ceil(areaP/25), hay=num("c_desn");
+    if(hay!==null) add("Desnatadores", hay+" instalados","Mínimo "+req+" (uno por cada 25 m²)","Art. 23°",
+      hay>=req?"ok":"bad", hay>=req?"":"Con "+areaP.toFixed(1)+" m² de espejo de agua corresponden al menos "+req+".");
+    else falta("Desnatadores","Uno por cada 25 m² de espejo de agua","Art. 23°");
+    if(areaP>200) add("Sistema de limpieza superficial","Espejo mayor de 200 m²","Exige canaletas de limpieza","Art. 23°","warn","");
+  }
+  add("Succión de fondo", si("c_sum")?"Instalada":"No se encontró","Componente obligatorio del sistema","Art. 41°",
+    si("c_sum")?"ok":"bad", si("c_sum")?"":"El Art. 41° la lista entre los componentes del sistema de recirculación; solo el numeral 9 es opcional.");
+  const dl=num("c_dren_l"), da=num("c_dren_a"), dt=num("c_dren_t");
+  if(dl&&da&&dt){
+    const aBoca=(dl/100)*(da/100), aTub=Math.PI*Math.pow(dt*PULG,2)/4, raz=aBoca/aTub;
+    add("Boca del sumidero respecto a la tubería", raz.toFixed(1)+" veces","Debe ser al menos 4 veces mayor","Art. 20°",
+      raz>=4?"ok":"bad","Una boca amplia reduce la fuerza de succión y el riesgo de atrapamiento.");
+  }
+  const rn=num("r_n"), rsep=num("r_sep"), ralt=num("r_alt");
+  if(rsep!==null) add("Separación entre boquillas de retorno", rsep+" m","No mayor de 5 m","Art. 27°",
+    rsep<=5?"ok":"bad","Separaciones mayores dejan zonas de agua estancada.");
+  if(ralt!==null){
+    const temperada = datos.v_clima==="Sí, temperada";
+    if(temperada) add("Ubicación de las boquillas de retorno", ralt+" cm bajo la superficie",
+      "Con agua temperada deben ir en el fondo","Art. 27°", ralt>=(profMed?profMed*100*0.8:200)?"ok":"bad",
+      "El Art. 27° distingue: a 30 cm bajo el nivel si el agua es fría, pero en el fondo cuando el estanque funciona con agua temperada.");
+    else add("Ubicación de las boquillas de retorno", ralt+" cm bajo la superficie","30 cm bajo el nivel del agua","Art. 27°",
+      Math.abs(ralt-30)<=10?"ok":"warn","");
+  }
+  if(rn!==null&&rn<2) add("Número de boquillas de retorno", rn+"","Deben asegurar la mezcla en todo el estanque","Art. 27°","warn","");
+  add("Tanque de compensación", si("r_tc")?"Instalado":"No se encontró","Obligatorio","Art. 26°",si("r_tc")?"ok":"bad",
+    "Evita que el agua de la piscina retorne al sistema de abastecimiento.");
+  if(datos.r_des) add("Desagüe del estanque", si("r_des")?"Conectado directo":"No conectado directo",
+    "Prohibida la conexión directa al desagüe del local o al colector","Art. 21°", si("r_des")?"bad":"ok","");
+  const gr=num("r_grif");
+  if(gr!==null) add("Grifos para toma de muestras", gr+"","Tres puntos: entrada, salida y después del tratamiento","Art. 45°",gr>=3?"ok":"bad","");
+
+  /* --- velocidades en tubería (criterio de diseño) --- */
+  if(qMed){
+    G("Velocidad en tuberías");
+    const vel=(d)=>{ const dm=d*PULG; return (qMed/3600)/(Math.PI*dm*dm/4); };
+    const ts=num("t_s_d"), ti=num("t_i_d");
+    if(ts) add("Velocidad en la succión", vel(ts).toFixed(2)+" m/s","Recomendado hasta 1.5 m/s","criterio",
+      vel(ts)<=1.5?"ok":"warn","Criterio de diseño, no exigencia del reglamento. Velocidades altas en succión favorecen la cavitación.");
+    if(ti) add("Velocidad en la impulsión", vel(ti).toFixed(2)+" m/s","Recomendado hasta 2.5 m/s","criterio",
+      vel(ti)<=2.5?"ok":"warn","Criterio de diseño, no exigencia del reglamento.");
+  }
+
+  /* --- calidad del agua --- */
+  G("Calidad del agua");
+  const rango=(id,t,lo,hi,u,art,nota)=>{ const v=num(id); const su=u?" "+u:"";
+    if(v===null){ falta(t,lo+" a "+hi+su,art); return; }
+    add(t, v+su, lo+" a "+hi+su, art, (v>=lo&&v<=hi)?"ok":"bad", nota||""); };
+  rango("a_cll","Cloro residual libre",0.4,1.2,"mg/L","Art. 48°","Es el desinfectante activo disponible en el agua.");
+  const clc=num("a_clc"), cll=num("a_cll"), clt=num("a_clt");
+  let comb=clc; if(comb===null&&clt!==null&&cll!==null) comb=clt-cll;
+  if(comb!==null) add("Cloro residual combinado", comb.toFixed(2)+" mg/L","Máximo 0.6 mg/L","Art. 48°",comb<=0.6?"ok":"bad",
+    clc===null?"Calculado como cloro total menos cloro libre.":"Es el cloro ya combinado con materia orgánica; en exceso irrita ojos y vías respiratorias.");
+  if(clt!==null) add("Cloro total", clt+" mg/L","Máximo 1.8 mg/L","Art. 48°",clt<=1.8?"ok":"bad","");
+  rango("a_ph","pH",6.5,8.5,"","Art. 52°","Fuera de rango, el cloro pierde eficacia aunque la concentración sea correcta.");
+  const tb=num("a_turb");
+  if(tb!==null) add("Turbidez", tb+" UNT","Máximo 5 UNT","Art. 52°",tb<=5?"ok":"bad","");
+  add("Transparencia con disco negro", si("a_disco")?"Se distingue con facilidad":"No se distingue",
+    "Debe distinguirse un disco negro de 0.15 m","Art. 54°",si("a_disco")?"ok":"bad","");
+  if(datos.v_clima==="Sí, temperada") rango("a_ta","Temperatura del agua",24,28,"°C","Art. 35°","");
+  const ta=num("a_ta"), tbn=num("a_tb");
+  if(ta!==null&&tbn!==null){ const dif=tbn-ta;
+    add("Diferencia entre aire y agua", dif.toFixed(1)+" °C","El aire debe superar al agua entre 2 y 4 °C","Art. 35°",
+      (dif>=2&&dif<=4)?"ok":"warn","Aplica solo a piscinas climatizadas."); }
+  const hr=num("a_hr");
+  if(hr!==null) add("Humedad relativa", hr+" %","No mayor de 70 %","Art. 35°",hr<=70?"ok":"bad","");
+
+  /* --- desinfección --- */
+  G("Desinfección");
+  add("Dosificación del desinfectante", si("d_auto")?"Automática":"Manual","Debe existir dispositivo automático","Art. 47°",
+    si("d_auto")?"ok":"bad", si("d_auto")?"":"La aplicación manual no satisface el Art. 47°, que exige un dispositivo automático.");
+  add("Almacén de productos químicos", si("d_alm")?"Existe ambiente exclusivo":"No hay ambiente exclusivo",
+    "Zona independiente, ventilada e inaccesible a usuarios","Art. 61°",si("d_alm")?"ok":"bad","");
+  add("Trampa de pelos", si("b_tram")?"Instalada":"No se encontró","El sistema debe retener pelos e hilos","Art. 44°",si("b_tram")?"ok":"bad","");
+  add("Válvula check en la succión", si("t_chk")?"Instalada":"No se encontró","Exigida expresamente","Art. 43°",si("t_chk")?"ok":"bad","");
+  add("Pozo de drenaje y válvula de purga", si("t_pur")?"Instalados":"No se encontraron","En la parte más baja del sistema","Art. 45°",si("t_pur")?"ok":"bad","");
+
+  /* --- entorno --- */
+  G("Entorno y servicios");
+  const ep=num("e_paseo");
+  if(ep!==null) add("Ancho del paseo perimetral", ep+" m","No menor de 1.50 m","Art. 16°",ep>=1.5?"ok":"bad","");
+  if(areaP){
+    const ed=num("e_desc");
+    if(ed!==null) add("Zona de descanso", ed+" m²","Al menos igual al espejo de agua ("+areaP.toFixed(1)+" m²)","Art. 15°",ed>=areaP?"ok":"bad","");
+    const es=num("e_som");
+    if(es!==null&&ed!==null) add("Superficie sombreada", es+" m²","Al menos un cuarto de la zona de descanso ("+(ed/4).toFixed(1)+" m²)","Art. 15°",es>=ed/4?"ok":"bad","");
+    const reqD=Math.max(1,Math.ceil(areaP/(publica?60:70))), hd=num("e_duchas");
+    if(hd!==null) add("Duchas", hd+" instaladas","Mínimo "+reqD+" (una por cada "+(publica?60:70)+" m²)","Art. 32°",hd>=reqD?"ok":"bad","");
+    const aforo = datos.v_techo==="Cubierta (techada)" ? areaP : areaP*1.5;
+    add("Aforo máximo", Math.floor(aforo)+" personas",
+      datos.v_techo==="Cubierta (techada)"?"1 persona por m² en piscinas cubiertas":"3 personas por cada 2 m² al aire libre",
+      "Art. 18°","ok","Dato necesario para dimensionar duchas, servicios y personal.");
+    const ei=num("e_ilum");
+    if(ei!==null&&datos.v_techo==="Cubierta (techada)") add("Aberturas de luz natural", ei+" m²",
+      "Al menos un tercio del espejo de agua ("+(areaP/3).toFixed(1)+" m²)","Art. 34°",ei>=areaP/3?"ok":"bad","");
+    const ev=num("e_vent");
+    if(ev!==null&&ei!==null) add("Aberturas de ventilación", ev+" m²","Al menos un tercio de la superficie de iluminación ("+(ei/3).toFixed(1)+" m²)","Art. 34°",ev>=ei/3?"ok":"bad","");
+  }
+  if(datos.e_libro) add("Libro de registro diario", datos.e_libro,"Presente y al día","Art. 56°",
+    datos.e_libro==="Sí, y está al día"?"ok":"bad","Criterio de Ordenamiento Documentario de la Directiva 033.");
+  add("Aprobación sanitaria", si("e_aprob")?"Vigente y visible":"No acreditada","Visible y vigente","Directiva 033",si("e_aprob")?"ok":"bad","");
+  add("Personal técnico capacitado", si("e_tec")?"Sí":"No acreditado","Obligatorio","Art. 55°",si("e_tec")?"ok":"bad","");
+  if(si("e_aedes")) add("Recipientes con agua estancada","Se encontraron","Ausencia de criaderos","Directiva 033","bad",
+    "Criterio de Control de Calidad de Limpieza de la Directiva 033.");
+
+  /* --- expediente --- */
+  G("Expediente técnico");
+  const docs=[["x_mem","Memoria descriptiva"],["x_arq","Planos de ubicación y arquitectura"],
+    ["x_san","Planos de instalaciones sanitarias con isométrico"],["x_man","Manual de operación y mantenimiento"],
+    ["x_esp","Especificaciones técnicas de recirculación"]];
+  const faltan=docs.filter(d=>!si(d[0]));
+  add("Documentos del expediente", (docs.length-faltan.length)+" de 5","Los cinco del Art. 9°","Art. 9°",
+    faltan.length===0?"ok":(faltan.length<=2?"warn":"bad"),
+    faltan.length?("Faltan: "+faltan.map(d=>d[1]).join("; ")+". Esta lista es, tal cual, la declaración de limitaciones del Capítulo III."):"Expediente completo.");
+
+  return R;
+}
+
+/* ============================================================
+   4. RENDER
+   ============================================================ */
+const main=document.getElementById("main");
+
+function campoHTML(c){
+  const v = datos[c.id]!==undefined?datos[c.id]:"";
+  const esc = s => String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+  let ctrl="";
+  if(c.t==="bool"){
+    ctrl='<div class="seg" role="group">'+["Sí","No"].map(o=>
+      '<button type="button" data-bool="'+c.id+'" data-val="'+o+'" aria-pressed="'+(v===o)+'">'+o+'</button>').join("")+'</div>';
+  } else if(c.t==="sel"){
+    ctrl='<select id="'+c.id+'" data-f="'+c.id+'"><option value="">— elegir —</option>'+
+      c.op.map(o=>'<option'+(v===o?" selected":"")+'>'+esc(o)+'</option>').join("")+'</select>';
+  } else if(c.t==="area"){
+    ctrl='<textarea id="'+c.id+'" data-f="'+c.id+'" rows="3">'+esc(v)+'</textarea>';
+  } else if(c.t==="num"){
+    ctrl='<div class="row"><input id="'+c.id+'" data-f="'+c.id+'" type="number" step="any" inputmode="decimal" value="'+esc(v)+'">'+
+      (c.u?'<span class="unit">'+c.u+'</span>':"")+'</div>';
+  } else {
+    ctrl='<input id="'+c.id+'" data-f="'+c.id+'" type="'+(c.t==="date"?"date":c.t==="time"?"time":"text")+'" value="'+esc(v)+'">';
+  }
+  let aux="";
+  if(c.aux==="balde") aux='<div class="aux"><b>¿No hay caudalímetro? Mídelo con un balde</b>'+
+    '<div class="row"><input type="number" step="any" inputmode="decimal" id="aux_v" placeholder="litros"><span class="unit">L</span>'+
+    '<span style="color:var(--ink-3)">en</span><input type="number" step="any" inputmode="decimal" id="aux_t" placeholder="segundos"><span class="unit">s</span>'+
+    '<button type="button" id="aux_go" style="padding:10px 14px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:3px;cursor:pointer;font:600 14px var(--sans)">Calcular caudal</button></div>'+
+    '<div class="help" style="margin:8px 0 0">Llena un balde de volumen conocido en la descarga y cronometra. Repite tres veces y usa el promedio.</div></div>';
+  if(c.aux==="perim") aux='<div class="aux"><b>¿No puedes medir el diámetro? Usa el perímetro</b>'+
+    '<div class="row"><input type="number" step="any" inputmode="decimal" id="aux_p" placeholder="perímetro"><span class="unit">m</span>'+
+    '<button type="button" id="aux_gp" style="padding:10px 14px;border:1px solid var(--accent);background:var(--accent);color:#fff;border-radius:3px;cursor:pointer;font:600 14px var(--sans)">Calcular diámetro</button></div>'+
+    '<div class="help" style="margin:8px 0 0">Rodea el tanque con cinta métrica por su parte más ancha.</div></div>';
+  return '<div class="f"><label for="'+c.id+'">'+esc(c.l)+'</label>'+
+    (c.h?'<div class="help">'+esc(c.h)+'</div>':"")+ctrl+aux+'</div>';
+}
+
+function render(){
+  const total=SECCIONES.length+1;
+  document.getElementById("bar").style.width=((paso)/(total-1)*100)+"%";
+  document.getElementById("pos").textContent="Paso "+(paso+1)+" de "+total;
+  document.getElementById("prev").disabled = paso===0;
+  document.getElementById("next").textContent = paso===total-1 ? "Inicio" : "Siguiente →";
+
+  // chips
+  const chips=SECCIONES.map((s,i)=>{
+    const llenos=s.campos.filter(c=>datos[c.id]!==undefined&&datos[c.id]!=="").length;
+    const done=llenos===s.campos.length;
+    return '<button type="button" data-go="'+i+'" aria-current="'+(i===paso)+'" class="'+(done?"done":"")+'">'+
+      (i+1)+". "+s.titulo.replace(/^\d+\s·\s/,"")+"</button>";
+  }).join("")+'<button type="button" data-go="'+SECCIONES.length+'" aria-current="'+(paso===SECCIONES.length)+'">Resultados</button>';
+  document.getElementById("steps").innerHTML=chips;
+
+  if(paso<SECCIONES.length){
+    const s=SECCIONES[paso];
+    main.innerHTML='<section class="sec"><header><div class="n">SECCIÓN '+(paso+1)+' DE '+SECCIONES.length+
+      '</div><h2>'+s.titulo+'</h2><p>'+s.intro+'</p></header><div class="fields">'+
+      s.campos.map(campoHTML).join("")+'</div></section>';
+  } else {
+    const R=calcular();
+    const cuenta={ok:0,bad:0,warn:0,na:0};
+    R.forEach(r=>{ if(!r.est) return;
+      if(r.est==="na" && r.v!=="Falta dato") return;  // filas informativas no cuentan como vacío
+      cuenta[r.est]++; });
+    let html='<section class="sec"><header><div class="n">VERIFICACIÓN AUTOMÁTICA</div>'+
+      '<h2>Resultados del levantamiento</h2><p>Calculado con lo que llevas anotado. Revísalo <b>antes de salir de la instalación</b>: '+
+      'si algo sale raro, todavía estás parado donde puedes volver a medir.</p></header>'+
+      '<div class="res"><div class="card" style="border-left-color:var(--accent)"><div class="t"><b>Resumen</b>'+
+      '<span><span class="tag ok">'+cuenta.ok+' cumple</span> <span class="tag bad">'+cuenta.bad+' no cumple</span> '+
+      '<span class="tag warn">'+cuenta.warn+' revisar</span> <span class="tag na">'+cuenta.na+' falta dato</span></span></div>'+
+      '<div class="x">Cada «falta dato» es un supuesto sin respaldo en tu Capítulo IV, o un segundo viaje.</div></div>';
+    R.forEach(r=>{
+      if(r.grupo){ html+='<div class="grp">'+r.grupo+'</div>'; return; }
+      html+='<div class="card '+r.est+'"><div class="t"><b>'+r.t+(r.art?'<span class="art">'+r.art+'</span>':"")+'</b>'+
+        '<span class="v">'+r.v+'</span></div>'+
+        '<div class="x"><b style="color:var(--ink-2)">Exigencia:</b> '+r.exig+(r.x?' — '+r.x:"")+'</div></div>';
+    });
+    html+='</div><div class="exp">'+
+      '<button type="button" id="xlsx">Exportar a Excel</button>'+
+      '<button type="button" class="alt" id="csv">Exportar CSV</button>'+
+      '<button type="button" class="alt" id="json">Guardar respaldo</button>'+
+      '<button type="button" class="alt" id="load">Cargar respaldo</button>'+
+      '<button type="button" class="alt" id="print">Imprimir</button>'+
+      '<button type="button" class="danger" id="wipe">Borrar todo</button></div>'+
+      '<div class="note">El archivo de Excel trae dos hojas: <b>Datos de campo</b> con todo lo anotado, y '+
+      '<b>Verificación</b> con estos cálculos y su veredicto normativo. Tus datos se guardan solos en este navegador; '+
+      'aun así, exporta el respaldo antes de irte de la instalación.</div></section>';
+    main.innerHTML=html;
+  }
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+/* --- eventos --- */
+document.addEventListener("input",e=>{
+  const f=e.target.dataset&&e.target.dataset.f;
+  if(f){ datos[f]=e.target.value; guardar(); }
+});
+document.addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.bool){ datos[b.dataset.bool]=b.dataset.val; guardar();
+    b.parentElement.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); return; }
+  if(b.dataset.go!==undefined){ paso=+b.dataset.go; render(); return; }
+  switch(b.id){
+    case "prev": if(paso>0){paso--;render();} break;
+    case "next": paso = paso>=SECCIONES.length ? 0 : paso+1; render(); break;
+    case "aux_go": {
+      const v=parseFloat(document.getElementById("aux_v").value), t=parseFloat(document.getElementById("aux_t").value);
+      if(v>0&&t>0){ const q=(v/1000)/(t/3600); datos.b_qmed=q.toFixed(2); guardar();
+        document.getElementById("b_qmed").value=q.toFixed(2); avisar("Caudal: "+q.toFixed(2)+" m³/h"); }
+      else avisar("Ingresa litros y segundos"); break; }
+    case "aux_gp": {
+      const p=parseFloat(document.getElementById("aux_p").value);
+      if(p>0){ const d=p/Math.PI; datos.f_d=d.toFixed(3); guardar();
+        document.getElementById("f_d").value=d.toFixed(3); avisar("Diámetro: "+d.toFixed(3)+" m"); }
+      else avisar("Ingresa el perímetro"); break; }
+    case "xlsx": exportarXLSX(); break;
+    case "csv": exportarCSV(); break;
+    case "json": descargar(new Blob([JSON.stringify(datos,null,2)],{type:"application/json"}), nombre("json")); break;
+    case "load": cargarRespaldo(); break;
+    case "print": window.print(); break;
+    case "wipe": if(confirm("¿Borrar todos los datos anotados? Esto no se puede deshacer.")){
+        datos={}; localStorage.removeItem(CLAVE); cargar(); paso=0; render(); avisar("Ficha vacía"); } break;
+  }
+});
+
+/* ============================================================
+   5. EXPORTACION
+   XLSX escrito a mano: ZIP sin compresión, sin librerías externas,
+   para que funcione en campo sin internet.
+   ============================================================ */
+function nombre(ext){
+  const f=(datos.v_fecha||new Date().toISOString().slice(0,10)).replace(/-/g,"");
+  return "levantamiento_piscina_apolo_"+f+"."+ext;
+}
+/* Entrega del archivo al usuario.
+   Publicada en claude.ai, la página no puede iniciar descargas por su cuenta:
+   tiene que pedirle el guardado al visor mediante la capability "downloads".
+   Servida desde un servidor propio o abierta en local, usa el enlace de siempre.
+   La misma función cubre los dos casos. */
+let _dl;
+async function canalDescarga(){
+  if(_dl!==undefined) return _dl;
+  try{ _dl = (window.claude && typeof claude.use==="function") ? await claude.use("downloads") : null; }
+  catch(e){ _dl=null; }
+  return _dl;
+}
+function descargarDirecto(blob,fn){
+  const a=document.createElement("a"), u=URL.createObjectURL(blob);
+  a.href=u; a.download=fn; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u); a.remove();},1500);
+  avisar("Archivo generado: "+fn);
+}
+async function descargar(blob,fn){
+  const dl = await canalDescarga();
+  if(dl){
+    try{
+      const r = await dl.save({filename:fn, data:blob});
+      avisar(r.status==="saved" ? "Archivo guardado: "+fn : "Archivo entregado");
+      return;
+    }catch(e){
+      switch(e && e.code){
+        case "declined":     avisar("Guardado cancelado"); return;
+        case "rate_limited": avisar("Espera unos segundos y vuelve a intentar"); return;
+        case "too_large":    avisar("El archivo excede el tamaño que acepta este destino"); return;
+        case "bad_request":  avisar("No se pudo preparar el archivo"); return;
+        default: break;   // capability no disponible: sigue con el método normal
+      }
+    }
+  }
+  descargarDirecto(blob,fn);
+}
+function filasDatos(){
+  const f=[["Sección","Campo","Valor","Unidad"]];
+  SECCIONES.forEach(s=>s.campos.forEach(c=>{
+    f.push([s.titulo, c.l, datos[c.id]!==undefined?String(datos[c.id]):"", c.u||""]);
+  }));
+  return f;
+}
+function filasCalc(){
+  const f=[["Grupo","Indicador","Valor obtenido","Exigencia normativa","Artículo","Veredicto","Comentario"]];
+  let g="";
+  calcular().forEach(r=>{
+    if(r.grupo){ g=r.grupo; return; }
+    const vd={ok:"CUMPLE",bad:"NO CUMPLE",warn:"REVISAR",na:"FALTA DATO"}[r.est]||"";
+    f.push([g,r.t,String(r.v),r.exig,r.art||"",vd,r.x||""]);
+  });
+  return f;
+}
+function exportarCSV(){
+  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+  const bloque=(t,f)=>t+"\n"+f.map(r=>r.map(q).join(";")).join("\n");
+  const txt="﻿"+bloque("DATOS DE CAMPO",filasDatos())+"\n\n"+bloque("VERIFICACION NORMATIVA",filasCalc());
+  descargar(new Blob([txt],{type:"text/csv;charset=utf-8"}), nombre("csv"));
+}
+function cargarRespaldo(){
+  const i=document.createElement("input"); i.type="file"; i.accept=".json,application/json";
+  i.onchange=()=>{ const fl=i.files[0]; if(!fl) return; const rd=new FileReader();
+    rd.onload=()=>{ try{ datos=JSON.parse(rd.result)||{}; guardar(); render(); avisar("Respaldo cargado"); }
+      catch(e){ avisar("El archivo no es válido"); } };
+    rd.readAsText(fl); };
+  i.click();
+}
+
+/* --- CRC32 --- */
+const TCRC=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;
+  for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0;}return t;})();
+function crc32(u8){let c=0xFFFFFFFF;for(let i=0;i<u8.length;i++)c=(c>>>8)^TCRC[(c^u8[i])&0xFF];return (c^0xFFFFFFFF)>>>0;}
+
+function zip(archivos){
+  const enc=new TextEncoder(), locales=[], centrales=[]; let off=0;
+  for(const a of archivos){
+    const nm=enc.encode(a.n), dt=a.d, crc=crc32(dt), sz=dt.length;
+    const lh=new Uint8Array(30+nm.length), lv=new DataView(lh.buffer);
+    lv.setUint32(0,0x04034b50,true); lv.setUint16(4,20,true); lv.setUint16(6,0x0800,true);
+    lv.setUint16(8,0,true); lv.setUint16(10,0,true); lv.setUint16(12,0x21,true);
+    lv.setUint32(14,crc,true); lv.setUint32(18,sz,true); lv.setUint32(22,sz,true);
+    lv.setUint16(26,nm.length,true); lv.setUint16(28,0,true); lh.set(nm,30);
+    locales.push(lh,dt);
+    const cd=new Uint8Array(46+nm.length), cv=new DataView(cd.buffer);
+    cv.setUint32(0,0x02014b50,true); cv.setUint16(4,20,true); cv.setUint16(6,20,true);
+    cv.setUint16(8,0x0800,true); cv.setUint16(10,0,true); cv.setUint16(12,0,true); cv.setUint16(14,0x21,true);
+    cv.setUint32(16,crc,true); cv.setUint32(20,sz,true); cv.setUint32(24,sz,true);
+    cv.setUint16(28,nm.length,true); cv.setUint16(30,0,true); cv.setUint16(32,0,true);
+    cv.setUint16(34,0,true); cv.setUint16(36,0,true); cv.setUint32(38,0,true); cv.setUint32(42,off,true);
+    cd.set(nm,46); centrales.push(cd);
+    off+=lh.length+sz;
+  }
+  let cdSize=0; centrales.forEach(c=>cdSize+=c.length);
+  const eo=new Uint8Array(22), ev=new DataView(eo.buffer);
+  ev.setUint32(0,0x06054b50,true); ev.setUint16(4,0,true); ev.setUint16(6,0,true);
+  ev.setUint16(8,archivos.length,true); ev.setUint16(10,archivos.length,true);
+  ev.setUint32(12,cdSize,true); ev.setUint32(16,off,true); ev.setUint16(20,0,true);
+  const partes=[...locales,...centrales,eo];
+  let tot=0; partes.forEach(p=>tot+=p.length);
+  const out=new Uint8Array(tot); let p=0; partes.forEach(x=>{out.set(x,p);p+=x.length;});
+  return out;
+}
+const U8=s=>new TextEncoder().encode(s);
+const X=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[m]))
+  .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,"");
+const COL=n=>{let s="";n++;while(n>0){const m=(n-1)%26;s=String.fromCharCode(65+m)+s;n=(n-m-1)/26;}return s;};
+
+function hoja(filas,anchos){
+  let x='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+    '<cols>'+anchos.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join("")+'</cols>'+
+    '<sheetData>';
+  filas.forEach((f,ri)=>{
+    x+='<row r="'+(ri+1)+'">';
+    f.forEach((v,ci)=>{
+      const ref=COL(ci)+(ri+1), st=ri===0?' s="1"':"";
+      const n=(v!==""&&v!==null&&isFinite(Number(v))&&String(v).trim()!=="")?Number(v):null;
+      if(ri>0&&n!==null&&/^-?\d+(\.\d+)?$/.test(String(v).trim()))
+        x+='<c r="'+ref+'"'+st+'><v>'+n+'</v></c>';
+      else x+='<c r="'+ref+'" t="inlineStr"'+st+'><is><t xml:space="preserve">'+X(v)+'</t></is></c>';
+    });
+    x+='</row>';
+  });
+  return x+'</sheetData></worksheet>';
+}
+function exportarXLSX(){
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+    '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+    '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+    '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  const wb='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>'+
+    '<sheet name="Datos de campo" sheetId="1" r:id="rId1"/>'+
+    '<sheet name="Verificacion" sheetId="2" r:id="rId2"/></sheets></workbook>';
+  const wbr='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'+
+    '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>'+
+    '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>';
+  const st='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+
+    '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font>'+
+    '<font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font></fonts>'+
+    '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+
+    '<fill><patternFill patternType="solid"><fgColor rgb="FF0D6E7D"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+    '<borders count="1"><border/></borders><cellStyleXfs count="1"><xf/></cellStyleXfs>'+
+    '<cellXfs count="2"><xf fontId="0" fillId="0" borderId="0" xfId="0" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'+
+    '<xf fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/></cellXfs>'+
+    '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  const bin=zip([
+    {n:"[Content_Types].xml",d:U8(ct)},
+    {n:"_rels/.rels",d:U8(rels)},
+    {n:"xl/workbook.xml",d:U8(wb)},
+    {n:"xl/_rels/workbook.xml.rels",d:U8(wbr)},
+    {n:"xl/styles.xml",d:U8(st)},
+    {n:"xl/worksheets/sheet1.xml",d:U8(hoja(filasDatos(),[26,44,26,10]))},
+    {n:"xl/worksheets/sheet2.xml",d:U8(hoja(filasCalc(),[24,34,20,38,12,14,60]))}
+  ]);
+  descargar(new Blob([bin],{type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}), nombre("xlsx"));
+}
+
+/* --- arranque --- */
+cargar(); render();
+window.addEventListener("beforeunload",guardar);
+
+/* Deja la ficha disponible sin señal: tras abrirla una vez con internet,
+   queda guardada en el teléfono y funciona dentro del sauna sin cobertura. */
+if("serviceWorker" in navigator && location.protocol!=="file:"){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "Ficha de campo · Piscina Sauna Spa Apolo",
+  "short_name": "Ficha de campo",
+  "description": "Levantamiento hidráulico-sanitario con verificación normativa automática y exportación a Excel.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef3f3",
+  "theme_color": "#0d6e7d",
+  "lang": "es-PE"
+}
