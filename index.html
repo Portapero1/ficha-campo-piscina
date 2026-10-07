@@ -53,6 +53,9 @@ body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:
 .sec>header{padding:16px 18px;border-bottom:1px solid var(--line);background:var(--accent-soft)}
 .sec>header .n{font-family:var(--mono);font-size:11px;color:var(--accent-ink);font-weight:600;letter-spacing:.1em}
 .sec>header h2{margin:3px 0 0;font-size:19px;letter-spacing:-.01em}
+.sec>header h2 .comp{font-family:var(--mono);font-size:10.5px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--accent);
+  padding:3px 8px;border-radius:2px;vertical-align:middle;white-space:nowrap}
 .sec>header p{margin:7px 0 0;font-size:13.5px;color:var(--ink-2);max-width:60ch}
 .fields{padding:6px 18px 18px}
 .f{padding:14px 0;border-bottom:1px solid var(--line)}
@@ -178,7 +181,7 @@ const SECCIONES = [
   {id:"v_clima", t:"sel", l:"¿El agua es temperada?", h:"Toca el agua o pregunta. Si hay caldera o equipo de calentamiento, es temperada.", op:["Sí, temperada","No, a temperatura ambiente"]}
 ]},
 
-{ id:"piscina", titulo:"1 · Estanque de la piscina", intro:"Mide tú mismo, no copies del plano. Estas medidas deciden la clasificación de la piscina y el caudal que la norma le exige.",
+{ id:"piscina", titulo:"Estanque de la piscina", intro:"Mide tú mismo, no copies del plano. Estas medidas deciden la clasificación de la piscina y el caudal que la norma le exige.",
   campos:[
   {id:"p_largo", t:"num", u:"m", l:"Largo interior", h:"El lado más largo, medido por dentro del estanque a la altura del agua. Si el borde es irregular, toma dos medidas y anota el promedio."},
   {id:"p_ancho", t:"num", u:"m", l:"Ancho interior", h:"El lado más corto, medido igual que el largo."},
@@ -194,7 +197,7 @@ const SECCIONES = [
   {id:"p_obs", t:"area", l:"Observaciones del estanque", h:"Ángulos, recodos, obstáculos, fugas visibles, cualquier cosa rara."}
 ]},
 
-{ id:"patera", titulo:"2 · Estanque de la patera", intro:"La patera es la poza para niños menores de cinco años. Este bloque es el más importante de toda la visita: sin su volumen no se puede evaluar el sistema compartido.",
+{ id:"patera", titulo:"Estanque de la patera", intro:"La patera es la poza para niños menores de cinco años. Este bloque es el más importante de toda la visita: sin su volumen no se puede evaluar el sistema compartido.",
   campos:[
   {id:"pt_hay", t:"bool", l:"¿Existe patera en la instalación?", h:"Es la poza pequeña y baja, para niños chicos.", def:"Sí"},
   {id:"pt_largo", t:"num", u:"m", l:"Largo interior de la patera", h:"Igual que con la piscina: por dentro, a la altura del agua."},
@@ -208,7 +211,7 @@ const SECCIONES = [
   {id:"pt_obs", t:"area", l:"Observaciones de la patera"}
 ]},
 
-{ id:"captacion", titulo:"3 · Por dónde sale el agua", intro:"El agua sale del estanque por los desnatadores (las cajas en la pared, al nivel del agua) y por el sumidero de fondo (la rejilla del piso).",
+{ id:"captacion", comp:1, titulo:"Por dónde sale el agua", intro:"Desde aquí y hasta la sección del retorno, los datos describen el circuito único que sirve a los DOS estanques, no a uno u otro por separado: esa es justamente la condición que tu tesis evalúa. El agua sale del estanque por los desnatadores (las cajas en la pared, al nivel del agua) y por el sumidero de fondo (la rejilla del piso).",
   campos:[
   {id:"c_desn", t:"num", u:"und", l:"Número de desnatadores", h:"Son las tapas rectangulares en la pared del estanque, justo al nivel del agua. Ábrelas: adentro tienen un canastillo. Cuéntalas todas."},
   {id:"c_desn_ub", t:"area", l:"Ubicación de cada desnatador", h:"Para cada uno, mide a cuántos metros está de las dos esquinas más cercanas. Escribe así — desnatador 1: a 2.10 m de la esquina norte y 1.40 m de la este."},
@@ -222,7 +225,7 @@ const SECCIONES = [
   {id:"c_obs", t:"area", l:"Observaciones de la captación"}
 ]},
 
-{ id:"tuberias", titulo:"4 · Tuberías del sistema", intro:"Aquí se decide si el cálculo de la bomba se puede hacer o no. Cuenta los accesorios uno por uno: no se pueden estimar después desde el escritorio.",
+{ id:"tuberias", comp:1, titulo:"Tuberías del sistema", intro:"Aquí se decide si el cálculo de la bomba se puede hacer o no. Cuenta los accesorios uno por uno: no se pueden estimar después desde el escritorio.",
   campos:[
   {id:"t_s_d", t:"num", u:"pulg", l:"Diámetro de la tubería de succión", h:"Es la que va del estanque hacia la bomba. Si no tiene marca legible, rodéala con cinta métrica flexible, anota el perímetro y divídelo entre 3.1416."},
   {id:"t_s_l", t:"num", u:"m", l:"Longitud de la tubería de succión", h:"Mide con wincha desde el estanque hasta la bomba, siguiendo el recorrido real, incluyendo los tramos verticales."},
@@ -243,7 +246,7 @@ const SECCIONES = [
   {id:"t_ind", t:"bool", l:"¿Hay válvula que permita separar los dos circuitos?", h:"Es decir, ¿se puede cerrar el paso a la patera y dejar circulando solo la piscina, o al revés?"}
 ]},
 
-{ id:"bombeo", titulo:"5 · Bomba", intro:"Copia la placa completa y fotografíala. Si la placa está borrosa o ilegible, anótalo: es un dato perdido que condiciona todo el cálculo.",
+{ id:"bombeo", comp:1, titulo:"Bomba", intro:"Copia la placa completa y fotografíala. Si la placa está borrosa o ilegible, anótalo: es un dato perdido que condiciona todo el cálculo.",
   campos:[
   {id:"b_n", t:"num", u:"und", l:"Número de bombas instaladas", h:"Cuenta todas, incluso las que estén apagadas o de repuesto."},
   {id:"b_marca", t:"text", l:"Marca", h:"Está en la placa metálica pegada al motor."},
@@ -260,7 +263,7 @@ const SECCIONES = [
   {id:"b_obs", t:"area", l:"Estado de la bomba", h:"Ruido raro, vibración, fugas, si se calienta, si hay más de una y solo funciona una."}
 ]},
 
-{ id:"filtro", titulo:"6 · Filtro", intro:"El diámetro del tanque es imprescindible: de ahí sale el área de filtración y, con ella, si el filtro da abasto o no.",
+{ id:"filtro", comp:1, titulo:"Filtro", intro:"El diámetro del tanque es imprescindible: de ahí sale el área de filtración y, con ella, si el filtro da abasto o no.",
   campos:[
   {id:"f_n", t:"num", u:"und", l:"Número de filtros", h:"Son los tanques grandes, generalmente ovalados o cilíndricos."},
   {id:"f_d", t:"num", u:"m", l:"Diámetro del tanque del filtro", h:"Mide de lado a lado por la parte más ancha. Si no puedes, rodéalo con cinta métrica, anota el perímetro y divídelo entre 3.1416.", aux:"perim"},
@@ -280,7 +283,7 @@ const SECCIONES = [
   {id:"f_cota", t:"sel", l:"¿El filtro está más arriba o más abajo que el agua de la piscina?", h:"Compara visualmente la altura del filtro con el nivel del agua del estanque.", op:["Más abajo que el agua","Más arriba que el agua","Al mismo nivel"]}
 ]},
 
-{ id:"desinf", titulo:"7 · Desinfección y productos químicos", intro:"El reglamento exige que la dosificación sea automática. Si el operador echa el cloro a mano con un balde, eso es un hallazgo.",
+{ id:"desinf", comp:1, titulo:"Desinfección y productos químicos", intro:"El reglamento exige que la dosificación sea automática. Si el operador echa el cloro a mano con un balde, eso es un hallazgo.",
   campos:[
   {id:"d_auto", t:"bool", l:"¿La dosificación del desinfectante es automática?", h:"Pregunta cómo se aplica el cloro. Si hay un equipo que lo inyecta solo, es automática. Si una persona lo echa a mano, no lo es."},
   {id:"d_tipo", t:"text", l:"Qué desinfectante usan", h:"Hipoclorito de calcio, hipoclorito de sodio, tricloro en pastillas, generador de cloro salino. Anota también la marca y la concentración del envase."},
@@ -294,7 +297,7 @@ const SECCIONES = [
   {id:"d_cal_t", t:"text", l:"Tipo y potencia del equipo de calentamiento", h:"Si existe, copia los datos de su placa."}
 ]},
 
-{ id:"retorno", titulo:"8 · Retorno del agua y reposición", intro:"Por dónde vuelve el agua tratada al estanque, y de dónde sale el agua que se repone.",
+{ id:"retorno", comp:1, titulo:"Retorno del agua y reposición", intro:"Por dónde vuelve el agua tratada al estanque, y de dónde sale el agua que se repone.",
   campos:[
   {id:"r_n", t:"num", u:"und", l:"Número de boquillas de retorno", h:"Son las boquillas por donde entra el agua al estanque. Se sienten con la mano: botan chorro."},
   {id:"r_sep", t:"num", u:"m", l:"Separación máxima entre dos boquillas vecinas", h:"Mide la distancia entre boquillas y anota la mayor de todas."},
@@ -310,7 +313,7 @@ const SECCIONES = [
   {id:"r_grif", t:"num", u:"und", l:"Número de grifos para tomar muestras de agua", h:"Pequeñas llaves instaladas en la tubería para sacar muestras. Deben ser tres."}
 ]},
 
-{ id:"agua", titulo:"9 · Calidad del agua medida hoy", intro:"Mide en el sitio, con el agua en operación normal. Toma las muestras en varios puntos del estanque, no solo en uno.",
+{ id:"agua", titulo:"Calidad del agua medida hoy", intro:"Mide en el sitio, con el agua en operación normal. Toma las muestras en varios puntos del estanque, no solo en uno.",
   campos:[
   {id:"a_cll", t:"num", u:"mg/L", l:"Cloro residual libre", h:"Con el kit DPD, pastilla número 1. Es el valor más importante de todos."},
   {id:"a_clc", t:"num", u:"mg/L", l:"Cloro residual combinado", h:"Es el cloro total menos el cloro libre. Si tu kit da solo dos valores, anótalos y el cálculo lo hace la ficha."},
@@ -326,7 +329,7 @@ const SECCIONES = [
   {id:"a_obs", t:"area", l:"Observaciones del agua", h:"Color, olor, espuma, algas en paredes, sedimento en el fondo, insectos."}
 ]},
 
-{ id:"entorno", titulo:"10 · Entorno, servicios y documentos", intro:"Lo que rodea al estanque y los papeles del establecimiento. Esta sección alimenta la Ficha de Inspección de la Directiva 033.",
+{ id:"entorno", titulo:"Entorno, servicios y documentos", intro:"Lo que rodea al estanque y los papeles del establecimiento. Esta sección alimenta la Ficha de Inspección de la Directiva 033.",
   campos:[
   {id:"e_paseo", t:"num", u:"m", l:"Ancho del pasillo que rodea el estanque", h:"Mide desde el borde de la piscina hasta la pared u obstáculo más cercano, en el punto más angosto."},
   {id:"e_anti", t:"bool", l:"¿El piso del pasillo es antideslizante?", h:"Pruébalo con el pie mojado, con cuidado."},
@@ -355,7 +358,7 @@ const SECCIONES = [
   {id:"e_prob", t:"area", l:"¿Qué problemas se repiten?", h:"Agua turbia, cloro que no sube, algas, bomba que se malogra. Esto alimenta la discusión de tu tesis."}
 ]},
 
-{ id:"expediente", titulo:"11 · Documentos del expediente", intro:"El Art. 9° exige cinco documentos. Marca cuáles te entregaron. Los que falten son, tal cual, la declaración de limitaciones de tu Capítulo III.",
+{ id:"expediente", titulo:"Documentos del expediente", intro:"El Art. 9° exige cinco documentos. Marca cuáles te entregaron. Los que falten son, tal cual, la declaración de limitaciones de tu Capítulo III.",
   campos:[
   {id:"x_mem", t:"bool", l:"Memoria descriptiva", h:"El documento que describe el proyecto en texto."},
   {id:"x_arq", t:"bool", l:"Planos de ubicación y arquitectura", h:"Incluye cortes y detalles de la piscina."},
@@ -678,7 +681,8 @@ function render(){
   if(paso<SECCIONES.length){
     const s=SECCIONES[paso];
     main.innerHTML='<section class="sec"><header><div class="n">SECCIÓN '+(paso+1)+' DE '+SECCIONES.length+
-      '</div><h2>'+s.titulo+'</h2><p>'+s.intro+'</p></header><div class="fields">'+
+      '</div><h2>'+s.titulo+(s.comp?' <span class="comp">circuito compartido</span>':"")+
+      '</h2><p>'+s.intro+'</p></header><div class="fields">'+
       s.campos.map(campoHTML).join("")+'</div></section>';
   } else {
     const R=calcular();
@@ -795,8 +799,8 @@ async function descargar(blob,fn){
 }
 function filasDatos(){
   const f=[["Sección","Campo","Valor","Unidad"]];
-  SECCIONES.forEach(s=>s.campos.forEach(c=>{
-    f.push([s.titulo, c.l, datos[c.id]!==undefined?String(datos[c.id]):"", c.u||""]);
+  SECCIONES.forEach((s,i)=>s.campos.forEach(c=>{
+    f.push([(i+1)+". "+s.titulo, c.l, datos[c.id]!==undefined?String(datos[c.id]):"", c.u||""]);
   }));
   return f;
 }
